@@ -18,7 +18,8 @@ class BaseDataset(data.Dataset):
                  crop_size=(512, 1024),
                  scale_factor=16,
                  mean=[0.485, 0.456, 0.406],
-                 std=[0.229, 0.224, 0.225]):
+                 std=[0.229, 0.224, 0.225],
+                 channel_type='rgb'):
 
         self.base_size = base_size
         self.crop_size = crop_size
@@ -26,6 +27,12 @@ class BaseDataset(data.Dataset):
 
         self.mean = mean
         self.std = std
+
+        if channel_type != 'hsv' and channel_type != 'rgb':
+            self.mean = [0.485, 0.456, 0.406,0.485, 0.456, 0.406]
+            self.std = [0.229, 0.224, 0.225,0.229, 0.224, 0.225]
+
+        self.channel_type = channel_type
         self.scale_factor = scale_factor
 
         self.files = []
@@ -122,7 +129,7 @@ class BaseDataset(data.Dataset):
         label = self.label_transform(label)
         
 
-        image = image.transpose((2, 0, 1))
+        image = image.transpose(( 2, 0, 1))
 
         if is_flip:
             flip = np.random.choice(2) * 2 - 1

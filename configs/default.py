@@ -18,6 +18,8 @@ _C.WORKERS = 4
 _C.PRINT_FREQ = 20
 _C.AUTO_RESUME = False
 _C.PIN_MEMORY = True
+_C.RESULT_DIR = 'preds'
+_C.CHANNEL_TYPE = 0
 
 # Cudnn related params
 _C.CUDNN = CN()
@@ -28,6 +30,7 @@ _C.CUDNN.ENABLED = True
 # common params for NETWORK
 _C.MODEL = CN()
 _C.MODEL.NAME = 'pidnet_s'
+_C.MODEL.TYPE = 'rgb'
 _C.MODEL.PRETRAINED = 'pretrained_models/imagenet/PIDNet_S_ImageNet.pth.tar'
 _C.MODEL.ALIGN_CORNERS = True
 _C.MODEL.NUM_OUTPUTS = 2

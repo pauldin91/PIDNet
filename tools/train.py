@@ -32,7 +32,7 @@ def parse_args():
     
     parser.add_argument('--cfg',
                         help='experiment configure file name',
-                        default="configs/cityscapes/pidnet_small_cityscapes.yaml",
+                        default="~/PIDNet-main/configs/smoke/pidnet_small_smoke.yaml",
                         type=str)
     parser.add_argument('--seed', type=int, default=304)    
     parser.add_argument('opts',
@@ -72,9 +72,9 @@ def main():
     cudnn.deterministic = config.CUDNN.DETERMINISTIC
     cudnn.enabled = config.CUDNN.ENABLED
     gpus = list(config.GPUS)
-    if torch.cuda.device_count() != len(gpus):
-        print("The gpu numbers do not match!")
-        return 0
+    #if torch.cuda.device_count() != len(gpus):
+    #    print("The gpu numbers do not match!")
+    #    return 0
     
     imgnet = 'imagenet' in config.MODEL.PRETRAINED
     model = models.pidnet.get_seg_model(config, imgnet_pretrained=imgnet)
@@ -91,7 +91,8 @@ def main():
                         ignore_label=config.TRAIN.IGNORE_LABEL,
                         base_size=config.TRAIN.BASE_SIZE,
                         crop_size=crop_size,
-                        scale_factor=config.TRAIN.SCALE_FACTOR)
+                        scale_factor=config.TRAIN.SCALE_FACTOR,
+                        channel_type=config.MODEL.TYPE)
 
     trainloader = torch.utils.data.DataLoader(
         train_dataset,
@@ -111,7 +112,8 @@ def main():
                         flip=False,
                         ignore_label=config.TRAIN.IGNORE_LABEL,
                         base_size=config.TEST.BASE_SIZE,
-                        crop_size=test_size)
+                        crop_size=test_size,
+                        channel_type=config.MODEL.TYPE)
 
     testloader = torch.utils.data.DataLoader(
         test_dataset,

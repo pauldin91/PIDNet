@@ -16,13 +16,16 @@ algc = False
 
 class PIDNet(nn.Module):
 
-    def __init__(self, m=2, n=3, num_classes=19, planes=64, ppm_planes=96, head_planes=128, augment=True):
+    def __init__(self, m=2, n=3, num_classes=19, planes=64, ppm_planes=96, head_planes=128, augment=True,
+                 channels=3):
         super(PIDNet, self).__init__()
         self.augment = augment
-        
+
+
+
         # I Branch
         self.conv1 =  nn.Sequential(
-                          nn.Conv2d(3,planes,kernel_size=3, stride=2, padding=1),
+                          nn.Conv2d(channels,planes,kernel_size=3, stride=2, padding=1),
                           BatchNorm2d(planes, momentum=bn_mom),
                           nn.ReLU(inplace=True),
                           nn.Conv2d(planes,planes,kernel_size=3, stride=2, padding=1),
@@ -182,13 +185,15 @@ class PIDNet(nn.Module):
             return x_      
 
 def get_seg_model(cfg, imgnet_pretrained):
-    
+    channels=3
+    if cfg.MODEL.TYPE!='rgb' and cfg.MODEL.TYPE!='hsv':
+        channels=6
     if 's' in cfg.MODEL.NAME:
-        model = PIDNet(m=2, n=3, num_classes=cfg.DATASET.NUM_CLASSES, planes=32, ppm_planes=96, head_planes=128, augment=True)
+        model = PIDNet(m=2, n=3, num_classes=cfg.DATASET.NUM_CLASSES, planes=32, ppm_planes=96, head_planes=128, augment=True,channels=channels)
     elif 'm' in cfg.MODEL.NAME:
-        model = PIDNet(m=2, n=3, num_classes=cfg.DATASET.NUM_CLASSES, planes=64, ppm_planes=96, head_planes=128, augment=True)
+        model = PIDNet(m=2, n=3, num_classes=cfg.DATASET.NUM_CLASSES, planes=64, ppm_planes=96, head_planes=128, augment=True,channels=channels)
     else:
-        model = PIDNet(m=3, n=4, num_classes=cfg.DATASET.NUM_CLASSES, planes=64, ppm_planes=112, head_planes=256, augment=True)
+        model = PIDNet(m=3, n=4, num_classes=cfg.DATASET.NUM_CLASSES, planes=64, ppm_planes=112, head_planes=256, augment=True,channels=channels)
     
     if imgnet_pretrained:
         pretrained_state = torch.load(cfg.MODEL.PRETRAINED, map_location='cpu')['state_dict'] 

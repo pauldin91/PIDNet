@@ -50,8 +50,13 @@ class FullModel(nn.Module):
     loss_b = self.bd_loss(outputs[-1], bd_gt)
 
     filler = torch.ones_like(labels) * config.TRAIN.IGNORE_LABEL
+    ######
+    #try:
     bd_label = torch.where(F.sigmoid(outputs[-1][:,0,:,:])>0.8, labels, filler)
     loss_sb = self.sem_loss(outputs[-2], bd_label)
+    #except:
+    #    loss_sb = self.sem_loss([outputs[-2]], labels)
+    #####
     loss = loss_s + loss_b + loss_sb
 
     return torch.unsqueeze(loss,0), outputs[:-1], acc, [loss_s, loss_b]
@@ -101,7 +106,7 @@ def create_logger(cfg, cfg_name, phase='train'):
 
     dataset = cfg.DATASET.DATASET
     model = cfg.MODEL.NAME
-    cfg_name = os.path.basename(cfg_name).split('.')[0]
+    cfg_name = os.path.basename(cfg_name).split('.')[0]+'_'+cfg.MODEL.TYPE
 
     final_output_dir = root_output_dir / dataset / cfg_name
 

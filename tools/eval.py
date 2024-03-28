@@ -29,7 +29,7 @@ def parse_args():
     
     parser.add_argument('--cfg',
                         help='experiment configure file name',
-                        default="experiments/cityscapes/pidnet_small_cityscapes.yaml",
+                        default="~/PIDNet-main/configs/fire/pidnet_small_fire.yaml",
                         type=str)
     parser.add_argument('opts',
                         help="Modify config options using the command-line",
@@ -89,7 +89,8 @@ def main():
                         flip=False,
                         ignore_label=config.TRAIN.IGNORE_LABEL,
                         base_size=config.TEST.BASE_SIZE,
-                        crop_size=test_size)
+                        crop_size=test_size,
+                        channel_type=config.MODEL.TYPE)
 
     testloader = torch.utils.data.DataLoader(
         test_dataset,
@@ -109,20 +110,32 @@ def main():
              sv_dir=final_output_dir)
         
     else:
-        mean_IoU, IoU_array, pixel_acc, mean_acc = testval(config, 
+        mean_IoU, IoU_array, pixel_acc, mean_acc, area_mean, no_fires_mean, deviation_mean, area_norm_mean, no_fires_norm_mean, deviation_norm_mean,no_fires_arr_mean = testval(config,
                                                            test_dataset, 
                                                            testloader, 
-                                                           model)
+                                                           model,
+                                                           sv_dir=final_output_dir)
     
-        msg = 'MeanIU: {: 4.4f}, Pixel_Acc: {: 4.4f}, \
-            Mean_Acc: {: 4.4f}, Class IoU: '.format(mean_IoU, 
-            pixel_acc, mean_acc)
+        msg = 'MeanIU: {: 4.4f},   \
+               Pixel_Acc: {: 4.4f}, \
+               Mean_Acc: {: 4.4f}, \
+               Area Mean: {: 4.4f}, \
+               No. Fires Mean: {: 4.4f}, \
+               Distance Deviation Mean: {: 4.4f},\
+               Area Norm: {: 4.4f}, \
+               No Fires Norm: {: 4.4f}, \
+               Deviation Norm: {: 4.4f}, \
+               No fires Actual: {:4.4f}, \
+               No fires Pred: {:4.4f}, \
+               Class IoU: '.format(mean_IoU,
+                                   pixel_acc,
+                                   mean_acc,area_mean,no_fires_mean,deviation_mean,area_norm_mean,no_fires_norm_mean,deviation_norm_mean,no_fires_arr_mean[0],no_fires_arr_mean[1])
         logging.info(msg)
         logging.info(IoU_array)
 
 
     end = timeit.default_timer()
-    logger.info('Mins: %d' % np.int((end-start)/60))
+    logger.info('Mins: %d' % int((end-start)/60))
     logger.info('Done')
 
 
