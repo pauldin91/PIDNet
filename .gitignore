@@ -165,5 +165,3 @@ events.*
 *.lst
 *.pt
 *.zip
-configs/fire/pidnet_small_fire.yaml
-configs/smoke/pidnet_small_smoke.yaml
